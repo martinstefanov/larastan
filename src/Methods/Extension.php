@@ -48,8 +48,12 @@ final class Extension implements MethodsClassReflectionExtension, BrokerAwareExt
      */
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        return $this->kernel->handle($this->broker, $classReflection, $methodName)
-            ->hasFound();
+        $passable = $this->kernel->handle($this->broker, $classReflection, $methodName);
+        if ($classReflection->isInterface()) {
+            return $classReflection->getDisplayName() == $passable->getClassReflection()->getDisplayName() && $passable->hasFound();
+        } else {
+            return $passable->hasFound();
+        }
     }
 
     /**
